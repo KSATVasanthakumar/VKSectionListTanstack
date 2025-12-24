@@ -1,26 +1,43 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Chip, SegmentedButtons } from 'react-native-paper';
 import { getUsers } from './api';
+import { useQuery } from '@tanstack/react-query';
 const App = () => {
   const [value, setValue] = useState('');
 
-  // const { }= useQuery({
-  //   queryKey:
-  // })
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const result = await getUsers();
-        console.log({ result });
-      } catch (error) {
-        console.error('Error Fetching api', error);
-      }
-    };
-    fetchUsers();
-  }, []);
+  const {
+    data: usersList,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  });
+  if (isPending)
+    return (
+      <SafeAreaView>
+        <Text>Loading....</Text>
+      </SafeAreaView>
+    );
+  if (error)
+    return (
+      <SafeAreaView>
+        <Text>Error:{error.message}</Text>
+      </SafeAreaView>
+    );
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const result = await getUsers();
+  //       console.log({ result });
+  //     } catch (error) {
+  //       console.error('Error Fetching api', error);
+  //     }
+  //   };
+  //   fetchUsers();
+  // }, []);
 
   // const getUsers = async () => {
   //   try {
@@ -35,7 +52,7 @@ const App = () => {
   // }, []);
   return (
     <SafeAreaView>
-      <SegmentedButtons
+      {/* <SegmentedButtons
         value={value}
         onValueChange={setValue}
         buttons={[
@@ -48,6 +65,15 @@ const App = () => {
             label: 'In Active Users',
           },
         ]}
+      /> */}
+      <FlatList
+        data={usersList}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.id}</Text>
+            <Text>{item.name}</Text>
+          </View>
+        )}
       />
     </SafeAreaView>
   );
