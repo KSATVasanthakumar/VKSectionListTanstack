@@ -1,26 +1,31 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Chip, SegmentedButtons } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Chip,
+  SegmentedButtons,
+} from 'react-native-paper';
 import { getUsers } from './api';
 import { useQuery } from '@tanstack/react-query';
 const App = () => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('completed');
+  const [completedTask, setCompletedTask] = useState([]);
+  console.log(value);
 
   const {
-    data: usersList,
+    data: usersList = [],
     isPending,
     error,
   } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
   });
-  if (isPending)
-    return (
-      <SafeAreaView>
-        <Text>Loading....</Text>
-      </SafeAreaView>
-    );
+
+  const filteredData = usersList.filter(item =>
+    value === 'completed' ? item.completed === true : item.completed === false,
+  );
   if (error)
     return (
       <SafeAreaView>
@@ -52,29 +57,42 @@ const App = () => {
   // }, []);
   return (
     <SafeAreaView>
-      {/* <SegmentedButtons
+      <SegmentedButtons
         value={value}
         onValueChange={setValue}
         buttons={[
-          {
-            value: 'walk',
-            label: 'Active Users',
-          },
-          {
-            value: 'train',
-            label: 'In Active Users',
-          },
+          { value: 'completed', label: 'Completed Task' },
+          { value: 'notcompleted', label: 'Not Completed' },
         ]}
-      /> */}
-      <FlatList
-        data={usersList}
-        renderItem={({ item }) => (
-          <View>
-            <Text>{item.id}</Text>
-            <Text>{item.name}</Text>
-          </View>
-        )}
       />
+
+      {isPending ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <FlatList
+          data={filteredData}
+          keyExtractor={item => item.id.toString()}
+          ListEmptyComponent={() => (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>
+              No records found
+            </Text>
+          )}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                flexDirection: 'row',
+                backgroundColor: '#f2f2f2',
+                padding: 10,
+                margin: 10,
+                borderRadius: 8,
+              }}
+            >
+              <Text>{item.id}</Text>
+              <Text style={{ marginLeft: 10 }}>{item.title}</Text>
+            </View>
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 };

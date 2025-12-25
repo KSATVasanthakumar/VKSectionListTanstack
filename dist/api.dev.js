@@ -17,19 +17,20 @@ var getUsers = function getUsers() {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
-          return regeneratorRuntime.awrap(_axios["default"].get("".concat(_env.BASE_PUBLIC_URL, "/users")));
+          console.log(_env.BASE_PUBLIC_URL);
+          _context.next = 3;
+          return regeneratorRuntime.awrap(_axios["default"].get("".concat(_env.BASE_PUBLIC_URL, "/todos")));
 
-        case 2:
+        case 3:
           response = _context.sent;
-          _context.next = 5;
+          _context.next = 6;
           return regeneratorRuntime.awrap(response.data);
 
-        case 5:
+        case 6:
           data = _context.sent;
           return _context.abrupt("return", data);
 
-        case 7:
+        case 8:
         case "end":
           return _context.stop();
       }
